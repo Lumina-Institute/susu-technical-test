@@ -1,0 +1,33 @@
+version: 2.1
+
+jobs:
+  api-install-and-lint:
+    docker:
+      - image: circleci/python:3.8
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          working_directory: ~/project
+          command: |
+            poetry install
+      - run:
+          name: Execute black
+          working_directory: ~/project/backend
+          command: poetry run black --check .
+      - run:
+          name: Execute pylint
+          working_directory: ~/project/backend
+          command: poetry run pylint .
+      - run:
+          name: Execute tests
+          working_directory: ~/project
+          command: poetry run pytest
+
+workflows:
+  test:
+    jobs:
+      - api-install-and-lint:
+          context:
+            - docker
